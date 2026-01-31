@@ -1,0 +1,12 @@
+{
+  "name": "library-management-system",
+  "version": "1.0.0",
+  "description": "A production-ready, full-stack Library Management System designed for modern libraries. It features a premium user interface, advanced search capabilities, automated fine management, and comprehensive analytics for administrators.",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC"
+}
