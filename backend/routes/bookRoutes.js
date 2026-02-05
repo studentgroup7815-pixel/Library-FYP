@@ -6,10 +6,12 @@ const {
   createBook,
   updateBook,
   deleteBook,
+  generateBookDescription,
 } = require('../controllers/bookController');
 const { protect, admin } = require('../middleware/authMiddleware');
 
 router.route('/').get(getBooks).post(protect, admin, createBook);
+router.post('/generate-ai-description', protect, admin, generateBookDescription);
 router
   .route('/:id')
   .get(getBookById)

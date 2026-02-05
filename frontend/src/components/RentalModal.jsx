@@ -1,13 +1,15 @@
 import { useState } from 'react';
 import { X, Calendar, DollarSign } from 'lucide-react';
 import axios from 'axios';
+import PaymentModal from './PaymentModal';
 
 const RentalModal = ({ isOpen, onClose, book, onSuccess }) => {
     const [rentalDuration, setRentalDuration] = useState(7);
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState('');
     const [transactionId, setTransactionId] = useState(null);
-    const [showPayment, setShowPayment] = useState(false);
+    const [showPayment, setShowPayment] = useState(false); // Can be 'summary' or 'modal'
+    const [showPaymentModal, setShowPaymentModal] = useState(false);
     const [paymentComplete, setPaymentComplete] = useState(false);
     const [successMessage, setSuccessMessage] = useState('');
 
@@ -45,6 +47,11 @@ const RentalModal = ({ isOpen, onClose, book, onSuccess }) => {
     };
 
     const handlePayment = async () => {
+        // Just show the modal now, don't pay yet
+        setShowPaymentModal(true);
+    };
+
+    const onPaymentSuccess = async () => {
         setLoading(true);
         setError('');
 
@@ -62,6 +69,7 @@ const RentalModal = ({ isOpen, onClose, book, onSuccess }) => {
                 config
             );
 
+            setShowPaymentModal(false);
             setSuccessMessage(data.message);
             setPaymentComplete(true);
             setTimeout(() => {
@@ -69,6 +77,7 @@ const RentalModal = ({ isOpen, onClose, book, onSuccess }) => {
                 onClose();
             }, 5000);
         } catch (err) {
+            setShowPaymentModal(false);
             setError(err.response?.data?.message || 'Payment failed');
         } finally {
             setLoading(false);
@@ -79,7 +88,9 @@ const RentalModal = ({ isOpen, onClose, book, onSuccess }) => {
         setRentalDuration(7);
         setError('');
         setTransactionId(null);
+        setTransactionId(null);
         setShowPayment(false);
+        setShowPaymentModal(false);
         setPaymentComplete(false);
         setSuccessMessage('');
         onClose();
@@ -89,6 +100,13 @@ const RentalModal = ({ isOpen, onClose, book, onSuccess }) => {
 
     return (
         <div className="fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center z-50 p-4">
+            <PaymentModal
+                isOpen={showPaymentModal}
+                onClose={() => setShowPaymentModal(false)}
+                amount={rentalCost}
+                onSuccess={onPaymentSuccess}
+                title={`Pay for ${book.title}`}
+            />
             <div className="card-dark max-w-lg w-full">
                 <div className="px-6 py-4 border-b border-gray-800/50 flex justify-between items-center">
                     <h2 className="text-xl font-bold text-white">
@@ -177,8 +195,8 @@ const RentalModal = ({ isOpen, onClose, book, onSuccess }) => {
                                             type="button"
                                             onClick={() => setRentalDuration(days)}
                                             className={`p-3 rounded-lg border-2 transition-all ${rentalDuration === days
-                                                    ? 'border-purple-600 bg-purple-600/10'
-                                                    : 'border-gray-800 hover:border-gray-700'
+                                                ? 'border-purple-600 bg-purple-600/10'
+                                                : 'border-gray-800 hover:border-gray-700'
                                                 }`}
                                         >
                                             <div className="text-white font-medium">{days} Days</div>

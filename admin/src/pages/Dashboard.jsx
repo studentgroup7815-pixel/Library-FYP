@@ -22,6 +22,7 @@ const Dashboard = () => {
         overdueRentals: 0,
         totalFines: 0,
     });
+    const [recentPayments, setRecentPayments] = useState([]);
     const [loading, setLoading] = useState(true);
     const { admin } = useAuth();
 
@@ -33,11 +34,14 @@ const Dashboard = () => {
                         Authorization: `Bearer ${admin.token}`,
                     },
                 };
-                const { data } = await axios.get(
-                    `${import.meta.env.VITE_API_URL}/admin/stats`,
-                    config
-                );
-                setStats(data);
+
+                const [statsRes, reportRes] = await Promise.all([
+                    axios.get(`${import.meta.env.VITE_API_URL}/admin/stats`, config),
+                    axios.get(`${import.meta.env.VITE_API_URL}/admin/fines/report`, config)
+                ]);
+
+                setStats(statsRes.data);
+                setRecentPayments(reportRes.data.recentlyPaid || []);
                 setLoading(false);
             } catch (error) {
                 console.error(error);
@@ -93,11 +97,11 @@ const Dashboard = () => {
                         <h3 className="text-gray-400 text-sm font-medium">Total Revenue</h3>
                         <DollarSign className="h-5 w-5 text-yellow-500" />
                     </div>
-                    <p className="text-2xl font-bold text-white">${stats.totalFines}</p>
+                    <p className="text-2xl font-bold text-white">${stats.totalFines.toFixed(2)}</p>
                 </div>
             </div>
 
-            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-6">
                 <div className="card-dark p-6">
                     <h3 className="text-lg font-semibold text-white mb-6">Overview</h3>
                     <div className="h-80">
@@ -167,6 +171,47 @@ const Dashboard = () => {
                             </div>
                         )}
                     </div>
+                </div>
+            </div>
+
+            {/* Recent Payments Section */}
+            <div className="card-dark p-6">
+                <h3 className="text-lg font-semibold text-white mb-4">Recent Payments</h3>
+                <div className="overflow-x-auto">
+                    <table className="w-full text-left text-sm">
+                        <thead className="bg-gray-900/50">
+                            <tr>
+                                <th className="px-4 py-3 rounded-l-lg text-gray-400 font-medium">User</th>
+                                <th className="px-4 py-3 text-gray-400 font-medium">Book</th>
+                                <th className="px-4 py-3 text-gray-400 font-medium">Amount</th>
+                                <th className="px-4 py-3 text-gray-400 font-medium">Date</th>
+                                <th className="px-4 py-3 rounded-r-lg text-gray-400 font-medium">Method</th>
+                            </tr>
+                        </thead>
+                        <tbody className="divide-y divide-gray-800">
+                            {recentPayments.length > 0 ? (
+                                recentPayments.map((payment) => (
+                                    <tr key={payment._id} className="hover:bg-gray-800/20">
+                                        <td className="px-4 py-3 text-white">{payment.user?.name || 'Unknown'}</td>
+                                        <td className="px-4 py-3 text-gray-400">{payment.book?.title || 'Unknown'}</td>
+                                        <td className="px-4 py-3 text-green-400 font-medium">${payment.fineAmount?.toFixed(2)}</td>
+                                        <td className="px-4 py-3 text-gray-400">{new Date(payment.finePaymentDate).toLocaleDateString()}</td>
+                                        <td className="px-4 py-3">
+                                            <span className="px-2 py-1 bg-purple-500/10 text-purple-400 rounded text-xs uppercase">
+                                                {payment.finePaymentMethod}
+                                            </span>
+                                        </td>
+                                    </tr>
+                                ))
+                            ) : (
+                                <tr>
+                                    <td colSpan="5" className="px-4 py-8 text-center text-gray-500">
+                                        No recent payments found
+                                    </td>
+                                </tr>
+                            )}
+                        </tbody>
+                    </table>
                 </div>
             </div>
         </div>

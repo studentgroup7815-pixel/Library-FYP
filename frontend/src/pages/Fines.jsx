@@ -13,6 +13,7 @@ import {
     ChevronDown,
     ChevronUp
 } from 'lucide-react';
+import PaymentModal from '../components/PaymentModal';
 
 const Fines = () => {
     const [finesData, setFinesData] = useState(null);
@@ -22,6 +23,9 @@ const Fines = () => {
     const [payingFine, setPayingFine] = useState(null);
     const [payingAll, setPayingAll] = useState(false);
     const [showHistory, setShowHistory] = useState(false);
+    const [showPaymentModal, setShowPaymentModal] = useState(false);
+    const [selectedFineAmount, setSelectedFineAmount] = useState(0);
+    const [paymentType, setPaymentType] = useState(null); // 'single' or 'all'
     const { user } = useAuth();
 
     const fetchData = async () => {
@@ -52,8 +56,21 @@ const Fines = () => {
         fetchData();
     }, [user]);
 
-    const handlePayFine = async (transactionId) => {
+    const handlePayFine = async (transactionId, amount) => {
         setPayingFine(transactionId);
+        setSelectedFineAmount(amount);
+        setPaymentType('single');
+        setShowPaymentModal(true);
+    };
+
+    const handlePayAllFines = async () => {
+        if (!finesData?.totalUnpaid) return;
+        setPaymentType('all');
+        setSelectedFineAmount(finesData.totalUnpaid);
+        setShowPaymentModal(true);
+    };
+
+    const processPayment = async () => {
         try {
             const config = {
                 headers: {
@@ -61,48 +78,34 @@ const Fines = () => {
                 },
             };
 
-            await axios.post(
-                `${import.meta.env.VITE_API_URL}/fines/${transactionId}/pay`,
-                { paymentMethod: 'online' },
-                config
-            );
+            if (paymentType === 'single') {
+                await axios.post(
+                    `${import.meta.env.VITE_API_URL}/fines/${payingFine}/pay`,
+                    { paymentMethod: 'online' },
+                    config
+                );
+                alert('Fine paid successfully!');
+            } else {
+                setPayingAll(true);
+                const response = await axios.post(
+                    `${import.meta.env.VITE_API_URL}/fines/pay-all`,
+                    { paymentMethod: 'online' },
+                    config
+                );
+                alert(`Successfully paid $${response.data.totalPaid.toFixed(2)} for ${response.data.paidTransactions.length} fines!`);
+            }
 
-            alert('Fine paid successfully!');
+            setShowPaymentModal(false);
             fetchData();
         } catch (error) {
             alert(error.response?.data?.message || 'Failed to pay fine');
         } finally {
             setPayingFine(null);
-        }
-    };
-
-    const handlePayAllFines = async () => {
-        if (!window.confirm(`Pay all outstanding fines totaling $${finesData?.totalUnpaid.toFixed(2)}?`)) {
-            return;
-        }
-
-        setPayingAll(true);
-        try {
-            const config = {
-                headers: {
-                    Authorization: `Bearer ${user.token}`,
-                },
-            };
-
-            const response = await axios.post(
-                `${import.meta.env.VITE_API_URL}/fines/pay-all`,
-                { paymentMethod: 'online' },
-                config
-            );
-
-            alert(`Successfully paid $${response.data.totalPaid.toFixed(2)} for ${response.data.paidTransactions.length} fines!`);
-            fetchData();
-        } catch (error) {
-            alert(error.response?.data?.message || 'Failed to pay fines');
-        } finally {
             setPayingAll(false);
         }
     };
+
+
 
     if (loading) {
         return (
@@ -114,6 +117,19 @@ const Fines = () => {
 
     return (
         <div className="max-w-4xl mx-auto">
+            {/* Payment Modal */}
+            <PaymentModal
+                isOpen={showPaymentModal}
+                onClose={() => {
+                    setShowPaymentModal(false);
+                    setPayingFine(null);
+                    setPayingAll(false);
+                }}
+                amount={selectedFineAmount}
+                onSuccess={processPayment}
+                title={paymentType === 'all' ? 'Pay All Fines' : 'Pay Fine'}
+            />
+
             <div className="mb-6">
                 <h1 className="text-2xl font-bold text-white mb-1">My Fines</h1>
                 <p className="text-sm text-gray-500">View and pay your library fines</p>
@@ -273,7 +289,7 @@ const Fines = () => {
                                                 ${fine.fineAmount?.toFixed(2)}
                                             </p>
                                             <button
-                                                onClick={() => handlePayFine(fine._id)}
+                                                onClick={() => handlePayFine(fine._id, fine.fineAmount)}
                                                 disabled={payingFine === fine._id}
                                                 className="mt-2 px-4 py-2 bg-purple-600 hover:bg-purple-700 text-white text-sm font-medium rounded-lg transition-colors disabled:opacity-50"
                                             >
