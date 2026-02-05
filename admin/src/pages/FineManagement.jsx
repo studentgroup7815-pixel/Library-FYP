@@ -37,8 +37,8 @@ const FineManagement = () => {
             };
 
             const [reportRes, configRes] = await Promise.all([
-                axios.get('http://localhost:5000/api/admin/fines/report', headerConfig),
-                axios.get('http://localhost:5000/api/admin/config', headerConfig)
+                axios.get(`${import.meta.env.VITE_API_URL}/admin/fines/report`, headerConfig),
+                axios.get(`${import.meta.env.VITE_API_URL}/admin/config`, headerConfig)
             ]);
 
             setFineReport(reportRes.data);
@@ -65,7 +65,7 @@ const FineManagement = () => {
             };
 
             await axios.put(
-                `http://localhost:5000/api/admin/transactions/${selectedTransaction._id}/waive`,
+                `${import.meta.env.VITE_API_URL}/admin/transactions/${selectedTransaction._id}/waive`,
                 {
                     waiveAmount: waiveAll ? 0 : waiveAmount,
                     waiveAll,
@@ -97,7 +97,7 @@ const FineManagement = () => {
             };
 
             await axios.put(
-                `http://localhost:5000/api/admin/users/${userId}/unblock`,
+                `${import.meta.env.VITE_API_URL}/admin/users/${userId}/unblock`,
                 {},
                 headerConfig
             );
@@ -180,8 +180,8 @@ const FineManagement = () => {
                 <button
                     onClick={() => setActiveTab('unpaid')}
                     className={`px-4 py-2 rounded-lg text-sm font-medium transition-colors ${activeTab === 'unpaid'
-                            ? 'bg-purple-600 text-white'
-                            : 'bg-gray-800 text-gray-400 hover:bg-gray-700'
+                        ? 'bg-purple-600 text-white'
+                        : 'bg-gray-800 text-gray-400 hover:bg-gray-700'
                         }`}
                 >
                     Unpaid Fines
@@ -189,8 +189,8 @@ const FineManagement = () => {
                 <button
                     onClick={() => setActiveTab('debtors')}
                     className={`px-4 py-2 rounded-lg text-sm font-medium transition-colors ${activeTab === 'debtors'
-                            ? 'bg-purple-600 text-white'
-                            : 'bg-gray-800 text-gray-400 hover:bg-gray-700'
+                        ? 'bg-purple-600 text-white'
+                        : 'bg-gray-800 text-gray-400 hover:bg-gray-700'
                         }`}
                 >
                     Top Debtors
@@ -198,8 +198,8 @@ const FineManagement = () => {
                 <button
                     onClick={() => setActiveTab('recent')}
                     className={`px-4 py-2 rounded-lg text-sm font-medium transition-colors ${activeTab === 'recent'
-                            ? 'bg-purple-600 text-white'
-                            : 'bg-gray-800 text-gray-400 hover:bg-gray-700'
+                        ? 'bg-purple-600 text-white'
+                        : 'bg-gray-800 text-gray-400 hover:bg-gray-700'
                         }`}
                 >
                     Recently Paid
@@ -246,10 +246,10 @@ const FineManagement = () => {
                                             </td>
                                             <td className="px-6 py-4">
                                                 <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${fine.isLost
-                                                        ? 'bg-red-500/10 text-red-400'
-                                                        : fine.status === 'overdue'
-                                                            ? 'bg-yellow-500/10 text-yellow-400'
-                                                            : 'bg-gray-500/10 text-gray-400'
+                                                    ? 'bg-red-500/10 text-red-400'
+                                                    : fine.status === 'overdue'
+                                                        ? 'bg-yellow-500/10 text-yellow-400'
+                                                        : 'bg-gray-500/10 text-gray-400'
                                                     }`}>
                                                     {fine.isLost ? 'Lost' : fine.status}
                                                 </span>
@@ -312,8 +312,8 @@ const FineManagement = () => {
                                             </td>
                                             <td className="px-6 py-4">
                                                 <span className={`inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-xs font-medium ${debtor.user?.accountStatus === 'blocked'
-                                                        ? 'bg-red-500/10 text-red-400'
-                                                        : 'bg-green-500/10 text-green-400'
+                                                    ? 'bg-red-500/10 text-red-400'
+                                                    : 'bg-green-500/10 text-green-400'
                                                     }`}>
                                                     {debtor.user?.accountStatus === 'blocked' && <Ban className="h-3 w-3" />}
                                                     {debtor.user?.accountStatus || 'active'}
@@ -391,8 +391,8 @@ const FineManagement = () => {
                                             </td>
                                             <td className="px-6 py-4">
                                                 <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${fine.finePaymentMethod === 'waived'
-                                                        ? 'bg-yellow-500/10 text-yellow-400'
-                                                        : 'bg-green-500/10 text-green-400'
+                                                    ? 'bg-yellow-500/10 text-yellow-400'
+                                                    : 'bg-green-500/10 text-green-400'
                                                     }`}>
                                                     {fine.finePaymentMethod || 'unknown'}
                                                 </span>

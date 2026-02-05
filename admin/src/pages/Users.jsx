@@ -18,7 +18,7 @@ const Users = () => {
                 },
             };
             const { data } = await axios.get(
-                'http://localhost:5000/api/users',
+                `${import.meta.env.VITE_API_URL}/users`,
                 config
             );
             setUsers(data);
@@ -46,7 +46,7 @@ const Users = () => {
                 },
             };
             await axios.put(
-                `http://localhost:5000/api/admin/users/${userId}/unblock`,
+                `${import.meta.env.VITE_API_URL}/admin/users/${userId}/unblock`,
                 {},
                 config
             );
@@ -68,7 +68,7 @@ const Users = () => {
                 },
             };
             await axios.put(
-                `http://localhost:5000/api/admin/users/${userId}/block`,
+                `${import.meta.env.VITE_API_URL}/admin/users/${userId}/block`,
                 { reason },
                 config
             );
@@ -154,8 +154,8 @@ const Users = () => {
                             key={f}
                             onClick={() => setFilter(f)}
                             className={`px-4 py-2 rounded-lg text-sm font-medium transition-colors ${filter === f
-                                    ? 'bg-purple-600 text-white'
-                                    : 'bg-gray-800 text-gray-400 hover:bg-gray-700'
+                                ? 'bg-purple-600 text-white'
+                                : 'bg-gray-800 text-gray-400 hover:bg-gray-700'
                                 }`}
                         >
                             {f === 'withFines' ? 'With Fines' : f.charAt(0).toUpperCase() + f.slice(1)}
@@ -198,8 +198,8 @@ const Users = () => {
                                 </td>
                                 <td className="px-5 py-4">
                                     <span className={`inline-flex items-center gap-1 px-2 py-0.5 rounded text-xs font-medium ${user.accountStatus === 'blocked'
-                                            ? 'bg-red-500/10 text-red-400'
-                                            : 'bg-green-500/10 text-green-400'
+                                        ? 'bg-red-500/10 text-red-400'
+                                        : 'bg-green-500/10 text-green-400'
                                         }`}>
                                         {user.accountStatus === 'blocked' && <Ban className="h-3 w-3" />}
                                         {user.accountStatus || 'active'}

@@ -27,7 +27,7 @@ const RentalModal = ({ isOpen, onClose, book, onSuccess }) => {
             };
 
             const { data } = await axios.post(
-                'http://localhost:5000/api/transactions/rent',
+                `${import.meta.env.VITE_API_URL}/transactions/rent`,
                 {
                     bookId: book._id,
                     rentalDuration,
@@ -57,7 +57,7 @@ const RentalModal = ({ isOpen, onClose, book, onSuccess }) => {
             };
 
             const { data } = await axios.post(
-                `http://localhost:5000/api/transactions/${transactionId}/pay`,
+                `${import.meta.env.VITE_API_URL}/transactions/${transactionId}/pay`,
                 {},
                 config
             );
@@ -176,11 +176,10 @@ const RentalModal = ({ isOpen, onClose, book, onSuccess }) => {
                                             key={days}
                                             type="button"
                                             onClick={() => setRentalDuration(days)}
-                                            className={`p-3 rounded-lg border-2 transition-all ${
-                                                rentalDuration === days
+                                            className={`p-3 rounded-lg border-2 transition-all ${rentalDuration === days
                                                     ? 'border-purple-600 bg-purple-600/10'
                                                     : 'border-gray-800 hover:border-gray-700'
-                                            }`}
+                                                }`}
                                         >
                                             <div className="text-white font-medium">{days} Days</div>
                                             <div className="text-gray-400 text-xs mt-1">${days * 2}</div>

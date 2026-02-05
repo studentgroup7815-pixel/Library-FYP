@@ -33,9 +33,9 @@ const Fines = () => {
             };
 
             const [finesRes, summaryRes, historyRes] = await Promise.all([
-                axios.get('http://localhost:5000/api/fines', config),
-                axios.get('http://localhost:5000/api/fines/summary', config),
-                axios.get('http://localhost:5000/api/fines/history', config)
+                axios.get(`${import.meta.env.VITE_API_URL}/fines`, config),
+                axios.get(`${import.meta.env.VITE_API_URL}/fines/summary`, config),
+                axios.get(`${import.meta.env.VITE_API_URL}/fines/history`, config)
             ]);
 
             setFinesData(finesRes.data);
@@ -62,7 +62,7 @@ const Fines = () => {
             };
 
             await axios.post(
-                `http://localhost:5000/api/fines/${transactionId}/pay`,
+                `${import.meta.env.VITE_API_URL}/fines/${transactionId}/pay`,
                 { paymentMethod: 'online' },
                 config
             );
@@ -90,7 +90,7 @@ const Fines = () => {
             };
 
             const response = await axios.post(
-                'http://localhost:5000/api/fines/pay-all',
+                `${import.meta.env.VITE_API_URL}/fines/pay-all`,
                 { paymentMethod: 'online' },
                 config
             );
@@ -220,10 +220,10 @@ const Fines = () => {
                                 <div
                                     key={fine._id}
                                     className={`p-4 rounded-lg border transition-colors ${fine.isLost
-                                            ? 'bg-red-950/20 border-red-900/50'
-                                            : fine.currentlyAccruing
-                                                ? 'bg-yellow-950/20 border-yellow-900/50'
-                                                : 'bg-gray-900/30 border-gray-800/50'
+                                        ? 'bg-red-950/20 border-red-900/50'
+                                        : fine.currentlyAccruing
+                                            ? 'bg-yellow-950/20 border-yellow-900/50'
+                                            : 'bg-gray-900/30 border-gray-800/50'
                                         }`}
                                 >
                                     <div className="flex items-start justify-between gap-4">

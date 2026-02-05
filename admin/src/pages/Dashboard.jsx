@@ -34,7 +34,7 @@ const Dashboard = () => {
                     },
                 };
                 const { data } = await axios.get(
-                    'http://localhost:5000/api/admin/stats',
+                    `${import.meta.env.VITE_API_URL}/admin/stats`,
                     config
                 );
                 setStats(data);
@@ -114,9 +114,9 @@ const Dashboard = () => {
                                 <CartesianGrid strokeDasharray="3 3" stroke="#2a2a35" />
                                 <XAxis dataKey="name" stroke="#6b7280" />
                                 <YAxis stroke="#6b7280" />
-                                <Tooltip 
-                                    contentStyle={{ 
-                                        backgroundColor: '#16161d', 
+                                <Tooltip
+                                    contentStyle={{
+                                        backgroundColor: '#16161d',
                                         border: '1px solid #2a2a35',
                                         borderRadius: '8px',
                                         color: '#fff'

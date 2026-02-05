@@ -21,7 +21,7 @@ const Transactions = () => {
                 },
             };
             const { data } = await axios.get(
-                'http://localhost:5000/api/transactions',
+                `${import.meta.env.VITE_API_URL}/transactions`,
                 config
             );
             setTransactions(data);
@@ -49,7 +49,7 @@ const Transactions = () => {
                 },
             };
             await axios.post(
-                `http://localhost:5000/api/admin/transactions/${selectedTransaction._id}/fine`,
+                `${import.meta.env.VITE_API_URL}/admin/transactions/${selectedTransaction._id}/fine`,
                 { fineAmount: customFine },
                 config
             );
@@ -73,7 +73,7 @@ const Transactions = () => {
                 },
             };
             await axios.put(
-                `http://localhost:5000/api/admin/transactions/${transactionId}/return`,
+                `${import.meta.env.VITE_API_URL}/admin/transactions/${transactionId}/return`,
                 {},
                 config
             );
@@ -94,7 +94,7 @@ const Transactions = () => {
                 },
             };
             await axios.put(
-                `http://localhost:5000/api/admin/transactions/${transactionId}/lost`,
+                `${import.meta.env.VITE_API_URL}/admin/transactions/${transactionId}/lost`,
                 {},
                 config
             );
@@ -113,7 +113,7 @@ const Transactions = () => {
                 headers: { Authorization: `Bearer ${admin.token}` },
             };
             await axios.put(
-                `http://localhost:5000/api/admin/transactions/${transactionId}/pay`,
+                `${import.meta.env.VITE_API_URL}/admin/transactions/${transactionId}/pay`,
                 { paymentMethod: 'cash' },
                 config
             );

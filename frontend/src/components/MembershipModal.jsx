@@ -36,7 +36,7 @@ const MembershipModal = ({ isOpen, onClose, onSuccess }) => {
             };
 
             await axios.post(
-                'http://localhost:5000/api/users/membership',
+                `${import.meta.env.VITE_API_URL}/users/membership`,
                 formData,
                 config
             );

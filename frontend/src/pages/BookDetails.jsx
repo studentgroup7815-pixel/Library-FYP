@@ -15,7 +15,7 @@ const BookDetails = () => {
     useEffect(() => {
         const fetchBook = async () => {
             try {
-                const { data } = await axios.get(`http://localhost:5000/api/books/${id}`);
+                const { data } = await axios.get(`${import.meta.env.VITE_API_URL}/books/${id}`);
                 setBook(data);
                 setLoading(false);
             } catch (error) {
@@ -46,7 +46,7 @@ const BookDetails = () => {
             };
 
             await axios.post(
-                'http://localhost:5000/api/transactions/rent',
+                `${import.meta.env.VITE_API_URL}/transactions/rent`,
                 { bookId: id },
                 config
             );

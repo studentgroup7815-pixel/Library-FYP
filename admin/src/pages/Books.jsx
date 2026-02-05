@@ -22,7 +22,7 @@ const Books = () => {
 
     const fetchBooks = async () => {
         try {
-            const { data } = await axios.get('http://localhost:5000/api/books');
+            const { data } = await axios.get(`${import.meta.env.VITE_API_URL}/books`);
             setBooks(data);
             setLoading(false);
         } catch (error) {
@@ -44,10 +44,10 @@ const Books = () => {
                 },
             };
             if (editingBook) {
-                await axios.put(`http://localhost:5000/api/books/${editingBook._id}`, formData, config);
+                await axios.put(`${import.meta.env.VITE_API_URL}/books/${editingBook._id}`, formData, config);
                 alert('Book updated successfully!');
             } else {
-                await axios.post('http://localhost:5000/api/books', formData, config);
+                await axios.post(`${import.meta.env.VITE_API_URL}/books`, formData, config);
                 alert('Book added successfully!');
             }
             setShowModal(false);
@@ -91,7 +91,7 @@ const Books = () => {
                         Authorization: `Bearer ${admin.token}`,
                     },
                 };
-                await axios.delete(`http://localhost:5000/api/books/${id}`, config);
+                await axios.delete(`${import.meta.env.VITE_API_URL}/books/${id}`, config);
                 fetchBooks();
             } catch (error) {
                 alert('Failed to delete book');
@@ -147,7 +147,7 @@ const Books = () => {
                                 </td>
                                 <td className="px-5 py-4">
                                     <div className="flex space-x-2">
-                                        <button 
+                                        <button
                                             onClick={() => handleEdit(book)}
                                             className="p-2 text-purple-400 hover:text-purple-300 hover:bg-purple-500/10 rounded-lg transition-colors"
                                             title="Edit book"

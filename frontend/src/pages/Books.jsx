@@ -21,7 +21,7 @@ const Books = () => {
         const fetchBooks = async () => {
             try {
                 const { data } = await axios.get(
-                    `http://localhost:5000/api/books?keyword=${keyword}`
+                    `${import.meta.env.VITE_API_URL}/books?keyword=${keyword}`
                 );
                 setBooks(data);
                 setLoading(false);
@@ -44,7 +44,7 @@ const Books = () => {
                         },
                     };
                     const { data } = await axios.get(
-                        'http://localhost:5000/api/users/membership/status',
+                        `${import.meta.env.VITE_API_URL}/users/membership/status`,
                         config
                     );
                     setIsMember(data.isMember);
@@ -63,7 +63,7 @@ const Books = () => {
                         },
                     };
                     const { data } = await axios.get(
-                        'http://localhost:5000/api/transactions/my-transactions',
+                        `${import.meta.env.VITE_API_URL}/transactions/my-transactions`,
                         config
                     );
                     const finesTotal = data
@@ -98,7 +98,7 @@ const Books = () => {
     const handleRentalSuccess = async () => {
         // Refresh books
         const { data } = await axios.get(
-            `http://localhost:5000/api/books?keyword=${keyword}`
+            `${import.meta.env.VITE_API_URL}/books?keyword=${keyword}`
         );
         setBooks(data);
     };
@@ -126,7 +126,7 @@ const Books = () => {
                     </div>
                 </div>
             )}
-            
+
             <div className="mb-6 flex flex-col md:flex-row md:items-center md:justify-between gap-4">
                 <h1 className="text-2xl font-bold text-white">Browse Books</h1>
                 <div className="relative w-full md:w-96">
@@ -183,11 +183,10 @@ const Books = () => {
                                     <button
                                         onClick={() => handleBorrow(book)}
                                         disabled={book.availableQuantity <= 0}
-                                        className={`flex-1 px-3 py-2 rounded-lg text-sm font-medium transition-colors flex items-center justify-center gap-1 ${
-                                            book.availableQuantity > 0
+                                        className={`flex-1 px-3 py-2 rounded-lg text-sm font-medium transition-colors flex items-center justify-center gap-1 ${book.availableQuantity > 0
                                                 ? 'bg-purple-600 text-white hover:bg-purple-700'
                                                 : 'bg-gray-800 text-gray-600 cursor-not-allowed'
-                                        }`}
+                                            }`}
                                     >
                                         <BookOpen className="h-3 w-3" />
                                         Rent

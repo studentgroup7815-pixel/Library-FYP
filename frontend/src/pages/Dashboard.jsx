@@ -23,9 +23,9 @@ const Dashboard = () => {
                 },
             };
             const [transactionsRes, statsRes, configRes] = await Promise.all([
-                axios.get('http://localhost:5000/api/transactions/my', config),
-                axios.get('http://localhost:5000/api/users/profile', config),
-                axios.get('http://localhost:5000/api/fines/config', config)
+                axios.get(`${import.meta.env.VITE_API_URL}/transactions/my`, config),
+                axios.get(`${import.meta.env.VITE_API_URL}/users/profile`, config),
+                axios.get(`${import.meta.env.VITE_API_URL}/fines/config`, config)
             ]);
             setTransactions(transactionsRes.data);
             setUserStats(statsRes.data);
@@ -65,7 +65,7 @@ const Dashboard = () => {
                 },
             };
             await axios.post(
-                'http://localhost:5000/api/transactions/return',
+                `${import.meta.env.VITE_API_URL}/transactions/return`,
                 { bookId },
                 config
             );
@@ -89,13 +89,13 @@ const Dashboard = () => {
 
             // Return the book (fine will be calculated on backend)
             await axios.post(
-                'http://localhost:5000/api/transactions/return',
+                `${import.meta.env.VITE_API_URL}/transactions/return`,
                 { bookId: selectedRental.book._id },
                 config
             );
 
             // Now pay the fine for this transaction
-            const transactionsRes = await axios.get('http://localhost:5000/api/transactions/my', config);
+            const transactionsRes = await axios.get(`${import.meta.env.VITE_API_URL}/transactions/my`, config);
             const returnedTransaction = transactionsRes.data.find(
                 t => t.book._id === selectedRental.book._id && t.status === 'returned' && t.fineAmount > 0 && !t.finePaid
             );
@@ -103,7 +103,7 @@ const Dashboard = () => {
             if (returnedTransaction) {
                 try {
                     await axios.post(
-                        `http://localhost:5000/api/fines/${returnedTransaction._id}/pay`,
+                        `${import.meta.env.VITE_API_URL}/fines/${returnedTransaction._id}/pay`,
                         { paymentMethod: 'online' },
                         config
                     );
