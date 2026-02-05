@@ -1,6 +1,6 @@
 const asyncHandler = require('express-async-handler');
 const Book = require('../models/Book');
-const axios = require('axios');
+const { HfInference } = require('@huggingface/inference');
 
 // @desc    Fetch all books
 // @route   GET /api/books
@@ -125,35 +125,41 @@ const generateBookDescription = asyncHandler(async (req, res) => {
     throw new Error('Title and Author are required');
   }
 
+  if (!process.env.HUGGINGFACE_API_KEY) {
+      console.error('HUGGINGFACE_API_KEY is missing in backend environment variables');
+      res.status(500);
+      throw new Error('Server configuration error: API Key missing');
+  }
+
   try {
+    const hf = new HfInference(process.env.HUGGINGFACE_API_KEY);
     const prompt = `Write a short, engaging description for the book titled "${title}" by ${author}.`;
     
-    // Using simple inference API
-    const response = await axios.post(
-      'https://api-inference.huggingface.co/models/google/flan-t5-large',
-      { inputs: prompt },
-      {
-        headers: {
-          Authorization: `Bearer ${process.env.HUGGINGFACE_API_KEY}`,
-          'Content-Type': 'application/json',
-        },
-      }
-    );
+    // Using Qwen/Qwen2.5-7B-Instruct as requested by user
+    const response = await hf.chatCompletion({
+      model: 'Qwen/Qwen2.5-7B-Instruct',
+      messages: [
+        { role: "system", content: "You are a helpful librarian assistant. Write short, engaging book descriptions." },
+        { role: "user", content: prompt }
+      ],
+      max_tokens: 200,
+      temperature: 0.7,
+    });
 
-    let generatedText = '';
-    if (Array.isArray(response.data) && response.data[0]?.generated_text) {
-        generatedText = response.data[0].generated_text;
-    } else if (response.data?.generated_text) {
-        generatedText = response.data.generated_text;
-    } else {
-        generatedText = 'No description generated.';
-    }
+    const generatedText = response.choices[0].message.content || 'No description generated.';
 
-    res.json({ description: generatedText });
+    // Clean up if necessary
+    const finalDescription = generatedText.trim();
+
+    res.json({ description: finalDescription });
   } catch (error) {
-    console.error('AI Generation Error:', error.response?.data || error.message);
-    res.status(503);
-    throw new Error('Failed to generate description via AI service');
+    console.error('AI Generation Error:', JSON.stringify(error, null, 2));
+    if (error.message?.includes('loading')) {
+        res.status(503);
+        throw new Error('Model is currently loading. Please try again in 30 seconds.');
+    }
+    res.status(500); 
+    throw new Error(`AI Service Error: ${error.message || 'Unknown error'}`);
   }
 });
 
