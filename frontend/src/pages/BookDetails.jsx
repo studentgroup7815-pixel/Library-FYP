@@ -60,79 +60,83 @@ const BookDetails = () => {
     if (error) return <div>{error}</div>;
 
     return (
-        <div className="max-w-4xl mx-auto">
+        <div className="max-w-5xl mx-auto px-4 py-8">
             <button
                 onClick={() => navigate(-1)}
-                className="flex items-center text-gray-600 hover:text-gray-900 mb-6"
+                className="flex items-center text-gray-400 hover:text-white mb-8 transition-colors group"
             >
-                <ArrowLeft className="h-4 w-4 mr-2" />
+                <ArrowLeft className="h-5 w-5 mr-2 group-hover:-translate-x-1 transition-transform" />
                 Back to Catalog
             </button>
 
-            <div className="bg-white rounded-lg shadow-sm border border-gray-200 overflow-hidden md:flex">
-                <div className="md:w-1/3">
+            <div className="card-dark overflow-hidden flex flex-col md:flex-row shadow-2xl ring-1 ring-white/10">
+                <div className="md:w-2/5 relative min-h-[400px]">
                     <img
                         src={book.coverImage}
                         alt={book.title}
-                        className="w-full h-full object-cover"
+                        className="absolute inset-0 w-full h-full object-cover"
                     />
+                    <div className="absolute inset-0 bg-gradient-to-t from-[#16161d] via-transparent to-transparent md:bg-gradient-to-r md:from-transparent md:to-[#16161d]"></div>
                 </div>
-                <div className="p-8 md:w-2/3">
-                    <div className="flex justify-between items-start">
+
+                <div className="p-8 md:w-3/5 bg-[#16161d]">
+                    <div className="flex justify-between items-start mb-6">
                         <div>
-                            <h1 className="text-3xl font-bold text-gray-900 mb-2">
+                            <h1 className="text-4xl font-bold text-white mb-2 leading-tight">
                                 {book.title}
                             </h1>
-                            <p className="text-xl text-gray-600 mb-4">{book.author}</p>
+                            <p className="text-xl text-purple-400 font-medium">{book.author}</p>
                         </div>
                         <span
-                            className={`px-3 py-1 rounded-full text-sm font-semibold ${book.availableQuantity > 0
-                                ? 'bg-green-100 text-green-800'
-                                : 'bg-red-100 text-red-800'
+                            className={`px-4 py-1.5 rounded-full text-sm font-bold tracking-wide uppercase ${book.availableQuantity > 0
+                                ? 'bg-green-500/10 text-green-400 ring-1 ring-green-500/50'
+                                : 'bg-red-500/10 text-red-400 ring-1 ring-red-500/50'
                                 }`}
                         >
                             {book.availableQuantity > 0 ? 'Available' : 'Out of Stock'}
                         </span>
                     </div>
 
-                    <div className="grid grid-cols-2 gap-4 mb-6">
-                        <div className="bg-gray-50 p-3 rounded-md">
-                            <span className="block text-xs text-gray-500 uppercase">Category</span>
-                            <span className="font-medium">{book.category}</span>
+                    <div className="grid grid-cols-2 gap-4 mb-8">
+                        <div className="bg-[#1f1f2e] p-4 rounded-xl border border-white/5">
+                            <span className="block text-xs text-gray-500 uppercase tracking-wider mb-1">Category</span>
+                            <span className="font-semibold text-gray-200">{book.category}</span>
                         </div>
-                        <div className="bg-gray-50 p-3 rounded-md">
-                            <span className="block text-xs text-gray-500 uppercase">ISBN</span>
-                            <span className="font-medium">{book.isbn}</span>
+                        <div className="bg-[#1f1f2e] p-4 rounded-xl border border-white/5">
+                            <span className="block text-xs text-gray-500 uppercase tracking-wider mb-1">ISBN</span>
+                            <span className="font-semibold text-gray-200">{book.isbn}</span>
                         </div>
-                        <div className="bg-gray-50 p-3 rounded-md">
-                            <span className="block text-xs text-gray-500 uppercase">
+                        <div className="bg-[#1f1f2e] p-4 rounded-xl border border-white/5">
+                            <span className="block text-xs text-gray-500 uppercase tracking-wider mb-1">
                                 Shelf Location
                             </span>
-                            <span className="font-medium">{book.shelfLocation || 'N/A'}</span>
+                            <span className="font-semibold text-gray-200">{book.shelfLocation || 'N/A'}</span>
                         </div>
-                        <div className="bg-gray-50 p-3 rounded-md">
-                            <span className="block text-xs text-gray-500 uppercase">
+                        <div className="bg-[#1f1f2e] p-4 rounded-xl border border-white/5">
+                            <span className="block text-xs text-gray-500 uppercase tracking-wider mb-1">
                                 Stock
                             </span>
-                            <span className="font-medium">
-                                {book.availableQuantity} / {book.totalQuantity}
+                            <span className="font-semibold text-gray-200">
+                                {book.availableQuantity} <span className="text-gray-500">/ {book.totalQuantity}</span>
                             </span>
                         </div>
                     </div>
 
-                    <div className="prose prose-sm text-gray-600 mb-8">
-                        <h3 className="text-lg font-semibold text-gray-900 mb-2">
+                    <div className="mb-8">
+                        <h3 className="text-lg font-semibold text-white mb-3 flex items-center">
                             Description
                         </h3>
-                        <p>{book.description || 'No description available.'}</p>
+                        <p className="text-gray-400 leading-relaxed text-lg font-light">
+                            {book.description || 'No description available for this title.'}
+                        </p>
                     </div>
 
                     <button
                         onClick={handleRent}
                         disabled={book.availableQuantity <= 0}
-                        className={`w-full py-3 px-4 rounded-md font-medium text-white transition-colors ${book.availableQuantity > 0
-                            ? 'bg-indigo-600 hover:bg-indigo-700'
-                            : 'bg-gray-400 cursor-not-allowed'
+                        className={`w-full py-4 px-6 rounded-xl font-bold text-lg shadow-lg hover:shadow-xl hover:-translate-y-0.5 transition-all duration-200 ${book.availableQuantity > 0
+                            ? 'bg-gradient-to-r from-purple-600 to-indigo-600 hover:from-purple-500 hover:to-indigo-500 text-white'
+                            : 'bg-gray-800 text-gray-500 cursor-not-allowed'
                             }`}
                     >
                         {book.availableQuantity > 0 ? 'Order for Home Delivery' : 'Currently Unavailable'}
