@@ -277,6 +277,10 @@ const Dashboard = () => {
                                                     <Calendar className="h-3 w-3 mr-1" />
                                                     <span>{new Date(rental.issueDate).toLocaleDateString()}</span>
                                                 </div>
+                                                <div className="flex items-center text-blue-400">
+                                                    <DollarSign className="h-3 w-3 mr-1" />
+                                                    <span>Cost: ${rental.rentalCost?.toFixed(2) || '0.00'}</span>
+                                                </div>
                                                 <div className={`flex items-center ${isOverdue ? 'text-red-500' : 'text-gray-600'}`}>
                                                     <Clock className="h-3 w-3 mr-1" />
                                                     <span>Due: {new Date(rental.dueDate).toLocaleDateString()}</span>
@@ -322,55 +326,45 @@ const Dashboard = () => {
                                     <th className="px-5 py-3 font-medium">Book</th>
                                     <th className="px-5 py-3 font-medium">Author</th>
                                     <th className="px-5 py-3 font-medium">Issued</th>
-                                    <th className="px-5 py-3 font-medium">Due</th>
-                                    <th className="px-5 py-3 font-medium">Returned/Lost</th>
-                                    <th className="px-5 py-3 font-medium">Fine</th>
-                                    <th className="px-5 py-3 font-medium">Status</th>
+                                    <th className="px-5 py-3 font-medium text-right">Total Paid</th>
+                                    <th className="px-5 py-3 font-medium text-center">Status</th>
                                 </tr>
                             </thead>
                             <tbody className="divide-y divide-gray-800/30">
-                                {history.map((rental) => (
-                                    <tr key={rental._id} className="hover:bg-gray-900/20 transition-colors">
-                                        <td className="px-5 py-4 font-medium text-white">
-                                            {rental.book.title}
-                                        </td>
-                                        <td className="px-5 py-4 text-gray-400">
-                                            {rental.book.author}
-                                        </td>
-                                        <td className="px-5 py-4 text-gray-500">
-                                            {new Date(rental.issueDate).toLocaleDateString()}
-                                        </td>
-                                        <td className="px-5 py-4 text-gray-500">
-                                            {new Date(rental.dueDate).toLocaleDateString()}
-                                        </td>
-                                        <td className="px-5 py-4 text-gray-500">
-                                            {rental.status === 'lost'
-                                                ? <span className="text-red-400">{new Date(rental.lostDate || rental.updatedAt).toLocaleDateString()}</span>
-                                                : (rental.returnDate ? new Date(rental.returnDate).toLocaleDateString() : '-')
-                                            }
-                                        </td>
-                                        <td className="px-5 py-4">
-                                            {rental.fineAmount > 0 ? (
-                                                <span className={rental.finePaid ? 'text-green-400' : 'text-red-400 font-semibold'}>
-                                                    ${rental.fineAmount.toFixed(2)}
-                                                    {rental.finePaid && ' ✓'}
+                                {history.map((rental) => {
+                                    const totalPaid = (rental.paymentStatus === 'paid' ? (rental.rentalCost || 0) : 0) + (rental.finePaid ? (rental.fineAmount || 0) : 0);
+                                    return (
+                                        <tr key={rental._id} className="hover:bg-gray-900/20 transition-colors">
+                                            <td className="px-5 py-4 font-medium text-white">
+                                                {rental.book.title}
+                                            </td>
+                                            <td className="px-5 py-4 text-gray-400">
+                                                {rental.book.author}
+                                            </td>
+                                            <td className="px-5 py-4 text-gray-500">
+                                                {new Date(rental.issueDate).toLocaleDateString()}
+                                            </td>
+                                            <td className="px-5 py-4 text-right">
+                                                <div className="flex flex-col items-end">
+                                                    <span className="text-white font-bold">${totalPaid.toFixed(2)}</span>
+                                                    <span className="text-[10px] text-gray-600 uppercase">
+                                                        R: ${rental.rentalCost?.toFixed(2)} | F: ${rental.fineAmount?.toFixed(2)}
+                                                    </span>
+                                                </div>
+                                            </td>
+                                            <td className="px-5 py-4 text-center">
+                                                <span className={`inline-flex items-center px-2.5 py-0.5 rounded-md text-xs font-medium ${rental.status === 'returned'
+                                                    ? 'bg-green-500/10 text-green-500'
+                                                    : rental.status === 'lost'
+                                                        ? 'bg-red-500/10 text-red-500'
+                                                        : 'bg-yellow-500/10 text-yellow-500'
+                                                    }`}>
+                                                    {rental.status}
                                                 </span>
-                                            ) : (
-                                                <span className="text-gray-600">-</span>
-                                            )}
-                                        </td>
-                                        <td className="px-5 py-4">
-                                            <span className={`inline-flex items-center px-2.5 py-0.5 rounded-md text-xs font-medium ${rental.status === 'returned'
-                                                ? 'bg-green-500/10 text-green-500'
-                                                : rental.status === 'lost'
-                                                    ? 'bg-red-500/10 text-red-500'
-                                                    : 'bg-yellow-500/10 text-yellow-500'
-                                                }`}>
-                                                {rental.status}
-                                            </span>
-                                        </td>
-                                    </tr>
-                                ))}
+                                            </td>
+                                        </tr>
+                                    );
+                                })}
                             </tbody>
                         </table>
                     )}

@@ -217,7 +217,7 @@ const Transactions = () => {
                                 <th className="px-6 py-3">Due Date</th>
                                 <th className="px-6 py-3">Return Date</th>
                                 <th className="px-6 py-3">Status</th>
-                                <th className="px-6 py-3">Fine</th>
+                                <th className="px-6 py-3">Payment Details</th>
                                 <th className="px-6 py-3">Actions</th>
                             </tr>
                         </thead>
@@ -260,13 +260,22 @@ const Transactions = () => {
                                             </span>
                                         </td>
                                         <td className="px-6 py-4">
-                                            {(transaction.currentFine || transaction.fineAmount) > 0 ? (
-                                                <span className="text-red-400 font-semibold">
-                                                    ${(transaction.currentFine || transaction.fineAmount).toFixed(2)}
+                                            <div className="flex flex-col">
+                                                <span className="text-gray-300 font-medium">
+                                                    Rate: ${transaction.rentalCost?.toFixed(2) || '0.00'}
                                                 </span>
-                                            ) : (
-                                                <span className="text-gray-500">-</span>
-                                            )}
+                                                {transaction.fineAmount > 0 && (
+                                                    <span className={`text-xs ${transaction.finePaid ? 'text-green-500' : 'text-red-400'}`}>
+                                                        Fine: ${transaction.fineAmount.toFixed(2)} {transaction.finePaid ? '(Paid)' : '(Unpaid)'}
+                                                    </span>
+                                                )}
+                                                <div className="mt-1 pt-1 border-t border-gray-800 flex items-center gap-1">
+                                                    <span className="text-[10px] text-gray-500 uppercase">Paid:</span>
+                                                    <span className="text-sm font-bold text-green-400">
+                                                        ${((transaction.paymentStatus === 'paid' ? (transaction.rentalCost || 0) : 0) + (transaction.finePaid ? (transaction.fineAmount || 0) : 0)).toFixed(2)}
+                                                    </span>
+                                                </div>
+                                            </div>
                                         </td>
                                         <td className="px-6 py-4">
                                             <div className="flex gap-2">

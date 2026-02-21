@@ -42,9 +42,22 @@ const getStats = asyncHandler(async (req, res) => {
     { $group: { _id: null, total: { $sum: '$fineAmount' } } }
   ]);
 
+  const rentalStats = await Transaction.aggregate([
+    { $match: { paymentStatus: { $in: ['pending', 'paid'] } } },
+    { $group: { _id: null, total: { $sum: '$rentalCost' } } }
+  ]);
+
+  const paidRentalStats = await Transaction.aggregate([
+    { $match: { paymentStatus: 'paid' } },
+    { $group: { _id: null, total: { $sum: '$rentalCost' } } }
+  ]);
+
   const totalOutstandingFines = unpaidStats[0] ? unpaidStats[0].total : 0;
-  const totalCollectedFines = paidStats[0] ? paidStats[0].total : 0;
-  const totalFines = totalOutstandingFines + totalCollectedFines;
+  const totalFineCollected = paidStats[0] ? paidStats[0].total : 0;
+  const totalRentalRevenue = rentalStats[0] ? rentalStats[0].total : 0;
+  const totalRentalCollected = paidRentalStats[0] ? paidRentalStats[0].total : 0;
+  const totalCollected = totalFineCollected + totalRentalCollected;
+  const totalFines = totalOutstandingFines + totalFineCollected;
 
   res.json({
     totalUsers,
@@ -53,7 +66,9 @@ const getStats = asyncHandler(async (req, res) => {
     activeRentals,
     overdueRentals,
     totalFines,
-    totalCollectedFines,
+    totalCollected,
+    totalFineCollected,
+    totalRentalRevenue,
     totalOutstandingFines,
   });
 });

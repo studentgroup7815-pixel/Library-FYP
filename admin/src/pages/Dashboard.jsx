@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
 import axios from 'axios';
+import { Link } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import {
     BarChart,
@@ -97,7 +98,10 @@ const Dashboard = () => {
                         <h3 className="text-gray-400 text-sm font-medium">Total Collected</h3>
                         <DollarSign className="h-5 w-5 text-green-500" />
                     </div>
-                    <p className="text-2xl font-bold text-white">${stats.totalCollectedFines?.toFixed(2) || '0.00'}</p>
+                    <p className="text-2xl font-bold text-white">${stats.totalCollected?.toFixed(2) || '0.00'}</p>
+                    <p className="text-[10px] text-gray-500 mt-1 uppercase tracking-tighter">
+                        Rentals: ${stats.totalRentalRevenue?.toFixed(2)} | Fines: ${stats.totalFineCollected?.toFixed(2)}
+                    </p>
                 </div>
                 <div className="card-dark p-5">
                     <div className="flex items-center justify-between mb-3">
