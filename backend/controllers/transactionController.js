@@ -161,9 +161,14 @@ const returnBook = asyncHandler(async (req, res) => {
   user.rentedBooks = user.rentedBooks.filter(
     (id) => id.toString() !== bookId.toString()
   );
-  if (transaction.fineAmount > 0) {
-    user.fines += transaction.fineAmount;
-  }
+  
+  // Recalculate total unpaid fines to ensure synchronization
+  const { calculateUserUnpaidFines } = require('../utils/fineJob');
+  const totalUnpaid = await calculateUserUnpaidFines(user._id);
+  user.totalUnpaidFines = totalUnpaid;
+  // Fallback for legacy fines field if still used elsewhere
+  user.fines = totalUnpaid; 
+
   await user.save();
 
   res.json(transaction);

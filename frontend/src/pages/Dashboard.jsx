@@ -209,12 +209,12 @@ const Dashboard = () => {
                 <div className="card-dark p-5">
                     <div className="flex items-center justify-between mb-3">
                         <span className="text-xs text-gray-500 uppercase tracking-wider">Unpaid Fines</span>
-                        <DollarSign className="h-4 w-4 text-yellow-500" />
+                        <DollarSign className="h-4 w-4 text-red-500" />
                     </div>
                     <p className="text-3xl font-bold text-white">${(userStats?.fines || 0).toFixed(2)}</p>
                     <div className="flex items-center justify-between mt-1">
                         <p className="text-xs text-gray-600">
-                            Lifetime: ${totalFines.toFixed(2)}
+                            Outstanding Balance
                         </p>
                         {userStats?.fines > 0 && (
                             <Link to="/fines" className="text-xs text-yellow-500 hover:text-yellow-400 font-medium flex items-center">
@@ -224,6 +224,21 @@ const Dashboard = () => {
                     </div>
                 </div>
             </div>
+
+            {userStats?.accountStatus === 'blocked' && (
+                <div className="mb-6 bg-red-500/10 border border-red-500/30 p-4 rounded-lg">
+                    <div className="flex items-start gap-3">
+                        <AlertTriangle className="h-5 w-5 text-red-400 mt-0.5" />
+                        <div>
+                            <p className="text-red-400 font-medium text-sm mb-1">Account Blocked</p>
+                            <p className="text-red-300 text-xs">
+                                Your account is currently blocked due to unpaid fines exceeding ${fineConfig?.accountBlockThreshold?.toFixed(2) || '50.00'}.
+                                Please pay your fines at the <Link to="/fines" className="underline font-medium">Fines page</Link> to restore borrowing privileges.
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            )}
 
             {/* Active Rentals */}
             <div className="card-dark mb-6">

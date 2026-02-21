@@ -94,10 +94,20 @@ const Dashboard = () => {
                 </div>
                 <div className="card-dark p-5">
                     <div className="flex items-center justify-between mb-3">
-                        <h3 className="text-gray-400 text-sm font-medium">Total Revenue</h3>
-                        <DollarSign className="h-5 w-5 text-yellow-500" />
+                        <h3 className="text-gray-400 text-sm font-medium">Total Collected</h3>
+                        <DollarSign className="h-5 w-5 text-green-500" />
                     </div>
-                    <p className="text-2xl font-bold text-white">${stats.totalFines.toFixed(2)}</p>
+                    <p className="text-2xl font-bold text-white">${stats.totalCollectedFines?.toFixed(2) || '0.00'}</p>
+                </div>
+                <div className="card-dark p-5">
+                    <div className="flex items-center justify-between mb-3">
+                        <h3 className="text-gray-400 text-sm font-medium">Outstanding Fines</h3>
+                        <DollarSign className="h-5 w-5 text-red-500" />
+                    </div>
+                    <p className="text-2xl font-bold text-white">${stats.totalOutstandingFines?.toFixed(2) || '0.00'}</p>
+                    <Link to="/fines" className="text-xs text-purple-500 hover:text-purple-400 font-medium mt-2 inline-block">
+                        Manage Fines →
+                    </Link>
                 </div>
             </div>
 

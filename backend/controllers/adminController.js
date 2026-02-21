@@ -31,17 +31,20 @@ const getStats = asyncHandler(async (req, res) => {
     status: 'overdue'
   });
 
-  // Calculate total fines
-  const fines = await Transaction.aggregate([
-    {
-      $group: {
-        _id: null,
-        totalFines: { $sum: '$fineAmount' },
-      },
-    },
+  // Calculate fine statistics
+  const unpaidStats = await Transaction.aggregate([
+    { $match: { finePaid: { $ne: true }, fineAmount: { $gt: 0 } } },
+    { $group: { _id: null, total: { $sum: '$fineAmount' } } }
   ]);
 
-  const totalFines = fines[0] ? fines[0].totalFines : 0;
+  const paidStats = await Transaction.aggregate([
+    { $match: { finePaid: true } },
+    { $group: { _id: null, total: { $sum: '$fineAmount' } } }
+  ]);
+
+  const totalOutstandingFines = unpaidStats[0] ? unpaidStats[0].total : 0;
+  const totalCollectedFines = paidStats[0] ? paidStats[0].total : 0;
+  const totalFines = totalOutstandingFines + totalCollectedFines;
 
   res.json({
     totalUsers,
@@ -50,6 +53,8 @@ const getStats = asyncHandler(async (req, res) => {
     activeRentals,
     overdueRentals,
     totalFines,
+    totalCollectedFines,
+    totalOutstandingFines,
   });
 });
 
